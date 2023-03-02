@@ -1,0 +1,32 @@
+{
+  "name": "basic_express_server",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/server.js",
+    "format": "prettier --write src/**/**/*.js",
+    "lint": "eslint --config=./.eslintrc src/**/**/*.js",
+    "lint:fix": "eslint --config=./.eslintrc src/**/**/*.js --fix"
+  },
+  "author": "Emre Can Çorapçı",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "json": "^11.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.0",
+    "prettier": "^2.8.4"
+  },
+  "devDependencies": {
+    "eslint": "^8.35.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "nodemon": "^2.0.20"
+  }
+}
