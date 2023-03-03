@@ -24,8 +24,8 @@
 ```
 ## User
 - Get All Users     - `/api/v1/users/`
-- Get User          - `/api/v1/users/:id`
-- Delete User       - `/api/v1/users/:id`
+- Get User          - `/api/v1/users/id`
+- Delete User       - `/api/v1/users/id`
 
 # Other
 - You can format the code with `npm run format`
