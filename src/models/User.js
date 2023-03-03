@@ -23,5 +23,10 @@ export default mongoose.model(
       required: [true, 'Please provide password'],
       minlength: 6,
     },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
   })
 );
