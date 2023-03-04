@@ -35,7 +35,7 @@ export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const user = User.findOneAndUpdate({ _id: id }, req.body, {
+    const user = await User.findOneAndUpdate({ _id: id }, req.body, {
       new: true,
       runValidators: true,
     });
