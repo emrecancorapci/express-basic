@@ -9,6 +9,11 @@ export const register = async (req, res) => {
     return res.status(400).json({ msg: 'You cannot leave empty fields.' });
   }
 
+  const isEmailExist = await User.exists({ email });
+  if (isEmailExist) {
+    return res.status(400).json({ msg: 'Email already exists.' });
+  }
+
   const salt = await bcrypt.genSalt(10);
   const saltedPassword = await bcrypt.hash(password, salt);
 
@@ -17,7 +22,8 @@ export const register = async (req, res) => {
     email,
     password: saltedPassword,
     role,
-  });
+  }).catch((error) => res.status(500).json({ msg: 'Failed', error }));
+
   const token = jwt.sign(
     { userId: user._id, name: user.name, role },
     process.env.JWT_SECRET,
@@ -26,9 +32,11 @@ export const register = async (req, res) => {
     }
   );
 
-  return res
-    .status(201)
-    .json({ msg: 'Success', user: { name: user.name }, token });
+  return res.status(201).json({
+    msg: 'Success',
+    user: { id: user._id, name: user.name, role: user.role },
+    token,
+  });
 };
 
 export const login = async (req, res) => {
@@ -55,7 +63,10 @@ export const login = async (req, res) => {
       expiresIn: process.env.JWT_LIFETIME,
     }
   );
-  return res
-    .status(200)
-    .json({ msg: 'Success', user: { name: user.name }, token });
+
+  return res.status(200).json({
+    msg: 'Success',
+    user: { id: user._id, name: user.name, role: user.role },
+    token,
+  });
 };
