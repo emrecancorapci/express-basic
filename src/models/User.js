@@ -25,7 +25,7 @@ export default mongoose.model(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'moderator', 'artist'],
       default: 'user',
     },
   })
