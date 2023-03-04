@@ -13,7 +13,7 @@ export const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
     return res.status(200).json({ msg: 'Success', user });
   } catch (error) {
@@ -25,7 +25,7 @@ export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
     return res.status(200).json({ msg: 'Success', user });
   } catch (error) {
