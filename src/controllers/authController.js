@@ -1,9 +1,10 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import until from '../middlewares/async-wrapper.js';
 
 import User from '../models/User.js';
 
-export const register = async (req, res) => {
+export const register = await until(async (req, res) => {
   const { name, email, password, role } = req.body;
   if (!name || !email || !password) {
     return res.status(400).json({ msg: 'You cannot leave empty fields.' });
@@ -22,7 +23,7 @@ export const register = async (req, res) => {
     email,
     password: saltedPassword,
     role,
-  }).catch((error) => res.status(500).json({ msg: 'Failed', error }));
+  });
 
   const token = jwt.sign(
     { userId: user._id, name: user.name, role },
@@ -37,9 +38,9 @@ export const register = async (req, res) => {
     user: { id: user._id, name: user.name, role: user.role },
     token,
   });
-};
+});
 
-export const login = async (req, res) => {
+export const login = await until(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -69,4 +70,4 @@ export const login = async (req, res) => {
     user: { id: user._id, name: user.name, role: user.role },
     token,
   });
-};
+});
