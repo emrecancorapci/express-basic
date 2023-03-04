@@ -12,9 +12,8 @@ export const getAllUsers = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
     return res.status(200).json({ msg: 'Success', user });
   } catch (error) {
     return res.status(500).json({ msg: 'Failed', error });
@@ -24,9 +23,24 @@ export const getUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    return res.status(200).json({ msg: 'Success', user });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Failed', error });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = User.findOneAndUpdate({ _id: id }, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
     return res.status(200).json({ msg: 'Success', user });
   } catch (error) {
     return res.status(500).json({ msg: 'Failed', error });
