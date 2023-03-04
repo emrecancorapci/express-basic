@@ -1,3 +1,5 @@
+import bcrypt from 'bcryptjs';
+
 import User from '../models/User.js';
 import until from '../middlewares/async-wrapper.js';
 
@@ -22,6 +24,13 @@ export const deleteUser = await until(async (req, res) => {
 
 export const updateUser = await until(async (req, res) => {
   const { id } = req.params;
+
+  const { password } = req.body;
+  if (password) {
+    const salt = await bcrypt.genSalt(10);
+    const saltedPassword = await bcrypt.hash(password, salt);
+    req.body.password = saltedPassword;
+  }
 
   const user = await User.findOneAndUpdate({ _id: id }, req.body, {
     new: true,
