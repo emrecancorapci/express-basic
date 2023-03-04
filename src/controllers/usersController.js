@@ -32,11 +32,15 @@ export const updateUser = await until(async (req, res) => {
     req.body.password = saltedPassword;
   }
 
-  const user = await User.findOneAndUpdate({ _id: id }, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const { name, email, role } = await User.findOneAndUpdate(
+    { _id: id },
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
 
-  if (!user) return res.status(404).json({ message: 'User not found' });
-  return res.status(200).json({ msg: 'Success', user });
+  if (!name) return res.status(404).json({ message: 'User not found' });
+  return res.status(200).json({ msg: 'Success', user: { name, email, role } });
 });
