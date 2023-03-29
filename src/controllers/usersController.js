@@ -1,39 +1,60 @@
-import bcrypt from 'bcryptjs';
+import { StatusCodes } from 'http-status-codes';
 
 import User from '../models/User.js';
-import until from '../middlewares/async-wrapper.js';
 
-export const getAllUsers = await until(async (req, res) => {
+import NotFoundError from '../errors/not-found.js';
+import BadRequestError from '../errors/bad-request.js';
+
+export const getAllUsers = async (req, res) => {
+  const {
+    user: { role },
+  } = req;
+
+  if (role !== 'admin')
+    throw new BadRequestError('You are not authorized to access this route.');
+
   const users = await User.find();
-  return res.status(200).json({ msg: 'Success', users });
-});
+  return res.status(StatusCodes.OK).json({ msg: 'Success', users });
+};
 
-export const getUser = await until(async (req, res) => {
+export const getUser = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
+
   const user = await User.findById(req.params.id);
+  if (!user) throw new NotFoundError(`User not found with this id: ${id}`);
 
-  if (!user) return res.status(404).json({ message: 'User not found' });
-  return res.status(200).json({ msg: 'Success', user });
-});
+  return res.status(StatusCodes.OK).json({ msg: 'Success', user });
+};
 
-export const deleteUser = await until(async (req, res) => {
+export const deleteUser = async (req, res) => {
   const user = await User.findByIdAndDelete(req.params.id);
 
-  if (!user) return res.status(404).json({ message: 'User not found' });
-  return res.status(200).json({ msg: 'Success', user });
-});
+  if (!user) throw new NotFoundError('User not found');
 
-export const updateUser = await until(async (req, res) => {
-  const { id } = req.params;
+  return res.status(StatusCodes.OK).json({ msg: 'Success', user });
+};
+
+export const updateUser = async (req, res) => {
+  const {
+    user: { userId, userRole },
+  } = req;
+  const { paramId } = req.params;
+
+  if (userId !== paramId && userRole !== 'admin')
+    throw new BadRequestError('You are not authorized to access this route.');
 
   const { password } = req.body;
   if (password) {
-    const salt = await bcrypt.genSalt(10);
-    const saltedPassword = await bcrypt.hash(password, salt);
-    req.body.password = saltedPassword;
+    throw new BadRequestError('You cannot change your password.');
   }
 
-  const { name, email, role } = await User.findOneAndUpdate(
-    { _id: id },
+  // I think user can send any data to update,
+  // so I need to check if the data is valid.
+  // But maybe mongoose already does this?
+  const { name, email, role } = await User.updateOne(
+    { _id: paramId },
     req.body,
     {
       new: true,
@@ -41,6 +62,9 @@ export const updateUser = await until(async (req, res) => {
     }
   );
 
-  if (!name) return res.status(404).json({ message: 'User not found' });
-  return res.status(200).json({ msg: 'Success', user: { name, email, role } });
-});
+  if (!name) throw new NotFoundError('User not found');
+
+  return res
+    .status(StatusCodes.OK)
+    .json({ msg: 'Success', user: { name, email, role } });
+};

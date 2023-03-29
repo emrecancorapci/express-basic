@@ -4,6 +4,7 @@ import 'express-async-errors';
 import authRouter from './routes/authRouter.js';
 import usersRouter from './routes/usersRouter.js';
 
+import authentication from './middleware/authentication.js';
 import notFoundMiddleware from './middleware/not-found.js';
 import errorHandlerMiddleware from './middleware/error-handler.js';
 
@@ -13,7 +14,7 @@ app.use(Express.json());
 app.use(Express.static('./public'));
 
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/users', authentication, usersRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

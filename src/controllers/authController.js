@@ -1,73 +1,57 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import until from '../middlewares/async-wrapper.js';
+import { StatusCodes } from 'http-status-codes';
 
+import BadRequest from '../errors/bad-request.js';
 import User from '../models/User.js';
 
-export const register = await until(async (req, res) => {
-  const { name, email, password, role } = req.body;
+export const register = async (req, res) => {
+  const { name, email, password } = req.body;
+
+  const { role } = req.body; //! JUST FOR TESTING
+
   if (!name || !email || !password) {
-    return res.status(400).json({ msg: 'You cannot leave empty fields.' });
+    throw new BadRequest('You cannot leave empty fields.');
   }
 
   const isEmailExist = await User.exists({ email });
   if (isEmailExist) {
-    return res.status(400).json({ msg: 'Email already exists.' });
+    throw new BadRequest('Email already exists.');
   }
 
-  const salt = await bcrypt.genSalt(10);
-  const saltedPassword = await bcrypt.hash(password, salt);
+  const user = await User.create({ name, email, password, role });
 
-  const user = await User.create({
-    name,
-    email,
-    password: saltedPassword,
-    role,
-  });
+  if (!user) {
+    throw new BadRequest('Something went wrong.');
+  }
 
-  const token = jwt.sign(
-    { userId: user._id, name: user.name, role },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_LIFETIME,
-    }
-  );
-
-  return res.status(201).json({
+  const token = await user.generateToken();
+  res.status(StatusCodes.CREATED).json({
     msg: 'Success',
     user: { id: user._id, name: user.name, role: user.role },
     token,
   });
-});
+};
 
-export const login = await until(async (req, res) => {
+export const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ msg: 'You cannot leave empty fields.' });
+    throw new BadRequest('You cannot leave empty fields .');
   }
 
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(401).json({ msg: 'Invalid Credentials' });
+    throw new BadRequest('Invalid credentials.');
   }
 
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
-    return res.status(401).json({ msg: 'Invalid Credentials' });
+    throw new BadRequest('Invalid credentials.');
   }
 
-  const token = jwt.sign(
-    { userId: user._id, name: user.name, role: user.role },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_LIFETIME,
-    }
-  );
-
-  return res.status(200).json({
+  const token = await user.generateToken();
+  res.status(StatusCodes.OK).json({
     msg: 'Success',
     user: { id: user._id, name: user.name, role: user.role },
     token,
   });
-});
+};
