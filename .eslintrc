@@ -1,38 +1,38 @@
 {
-    "env": {
-      "shared-node-browser": true,
-      "es2022": true
-    },
-    "extends": [
-      "prettier",
-      "airbnb-base",
-      "eslint:recommended",
-      "plugin:prettier/recommended",
-      "plugin:import/errors",
-      "plugin:import/warnings"
+  "env": {
+    "shared-node-browser": true,
+    "es2022": true
+  },
+  "overrides": [],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "settings": {
+    "import/resolver": "node"
+  },
+  "plugins": ["prettier", "eslint-plugin-import", "eslint-plugin-n"],
+  "extends": [
+    "prettier",
+    "airbnb-base",
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:n/recommended"
+  ],
+  "rules": {
+    "import/extensions": [
+      "error",
+      {
+        "js": "ignorePackages"
+      }
     ],
-    "plugins": ["prettier"],
-    "overrides": [],
-    "parserOptions": {
-      "ecmaVersion": "latest",
-      "sourceType": "module"
-    },
-    "settings": {
-      "import/resolver": "node"
-    },
-    "rules": {
-      "import/extensions": [
-        "error",
-        {
-          "js": "ignorePackages"
-        }
-      ],
-      "prettier/prettier": "warn",
-      "arrow-body-style": "warn",
-      "no-unused-vars": "warn",
-      "no-useless-constructor": "warn",
-      "no-underscore-dangle": "off",
-      "no-console": "off"
-    }
+    "prettier/prettier": "warn",
+    "arrow-body-style": "warn",
+    "no-unused-vars": "warn",
+    "no-useless-constructor": "warn",
+    "no-underscore-dangle": "off",
+    "no-console": "off"
   }
-  
+}
